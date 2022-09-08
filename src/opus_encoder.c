@@ -541,6 +541,7 @@ OpusEncoder *opus_encoder_create(opus_int32 Fs, int channels, int application, i
       opus_free(st);
       st = NULL;
    }
+   opus_encoder_ctl(st, OPUS_SET_VBR_CONSTRAINT(1));
    return st;
 }
 
