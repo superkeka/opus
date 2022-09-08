@@ -541,7 +541,7 @@ OpusEncoder *opus_encoder_create(opus_int32 Fs, int channels, int application, i
       opus_free(st);
       st = NULL;
    }
-   opus_encoder_ctl(st, OPUS_SET_VBR(0))
+   opus_encoder_ctl(st, OPUS_SET_VBR(0));
    return st;
 }
 
@@ -2223,6 +2223,7 @@ opus_int32 opus_encode_float(OpusEncoder *st, const float *pcm, int analysis_fra
 opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_frame_size,
                 unsigned char *data, opus_int32 out_data_bytes)
 {
+   opus_encoder_ctl(st, OPUS_SET_VBR(0));
    int frame_size;
    frame_size = frame_size_select(analysis_frame_size, st->variable_duration, st->Fs);
    return opus_encode_native(st, pcm, frame_size, data, out_data_bytes, 16,
@@ -2233,6 +2234,7 @@ opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_fram
 opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_frame_size,
       unsigned char *data, opus_int32 max_data_bytes)
 {
+   opus_encoder_ctl(st, OPUS_SET_VBR(0));
    int i, ret;
    int frame_size;
    VARDECL(float, in);
