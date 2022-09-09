@@ -30,6 +30,7 @@
 #endif
 
 #include <stdarg.h>
+#include <stdio.h>
 #include "celt.h"
 #include "entenc.h"
 #include "modes.h"
@@ -50,6 +51,7 @@
 #else
 #include "float/structs_FLP.h"
 #endif
+
 
 #define MAX_ENCODER_BUFFER 480
 
@@ -236,9 +238,9 @@ int opus_encoder_init(OpusEncoder* st, opus_int32 Fs, int channels, int applicat
     celt_encoder_ctl(celt_enc, CELT_SET_SIGNALLING(0));
     celt_encoder_ctl(celt_enc, OPUS_SET_COMPLEXITY(st->silk_mode.complexity));
 
-    st->use_vbr = 1;
+    st->use_vbr = 0;
     /* Makes constrained VBR the default (safer for real-time use) */
-    st->vbr_constraint = 1;
+    st->vbr_constraint = 0;
     st->user_bitrate_bps = OPUS_AUTO;
     st->bitrate_bps = 3000+Fs*channels;
     st->application = application;
@@ -542,6 +544,7 @@ OpusEncoder *opus_encoder_create(opus_int32 Fs, int channels, int application, i
       st = NULL;
    }
    opus_encoder_ctl(st, OPUS_SET_VBR(0));
+   opus_encoder_ctl(st, OPUS_SET_VBR_CONSTRAINT(0));
    return st;
 }
 
@@ -2223,7 +2226,8 @@ opus_int32 opus_encode_float(OpusEncoder *st, const float *pcm, int analysis_fra
 opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_frame_size,
                 unsigned char *data, opus_int32 out_data_bytes)
 {
-   opus_encoder_ctl(st, OPUS_SET_VBR(0));
+  
+   printf("encode");
    int frame_size;
    frame_size = frame_size_select(analysis_frame_size, st->variable_duration, st->Fs);
    return opus_encode_native(st, pcm, frame_size, data, out_data_bytes, 16,
